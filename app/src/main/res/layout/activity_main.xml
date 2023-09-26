@@ -91,6 +91,7 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/frameLayout5"
         android:layout_width="100dp"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -107,7 +108,62 @@
             android:paddingStart="25dp"
             android:paddingEnd="25dp"
             android:rotation="-90"
-            android:thumb="@drawable/thumb_selector_thumb"/>
+            android:thumb="@drawable/thumb_selector_thumb" />
     </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="522dp"
+        android:layout_height="598dp"
+        android:orientation="vertical"
+        android:layout_marginLeft="25dp"
+        android:padding="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/frameLayout5"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="輸入氣壓："
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="小指氣壓："
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="名指氣壓："
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="中指氣壓："
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="食指氣壓："
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="拇指氣壓："
+            android:textSize="28sp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
