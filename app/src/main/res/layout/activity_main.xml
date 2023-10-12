@@ -112,10 +112,11 @@
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="522dp"
         android:layout_height="598dp"
-        android:orientation="vertical"
         android:layout_marginLeft="25dp"
+        android:orientation="vertical"
         android:padding="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -164,6 +165,17 @@
             android:layout_height="wrap_content"
             android:text="拇指氣壓："
             android:textSize="28sp" />
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_bluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Connect"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
