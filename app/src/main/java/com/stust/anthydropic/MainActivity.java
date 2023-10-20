@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //藍芽數據暫存********************************
     //接收-------------------
     private static final int CHUNK_SIZE = 4096;
+    private String receiveStrArray[] = {"00.0", "00.0", "00.0", "00.0", "00.0", "00.0","00"};
     //發送-------------------
     private int bleSendText[] = {0,0,0,0,0,1};
                                                 // "小指,名指,中指,食指,拇指,始能"
@@ -95,6 +96,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // 建立 Handler
         mHandler = new Handler();
+
+        // 藍芽訊息監控 Thread 初始化
+        receiveBlePost.start();
+        sendBlePost.start();
 
         // BlueTooth Adapter
         bluetoothManager = getSystemService(BluetoothManager.class);
@@ -225,7 +230,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    
+                                    binding.INFOR.setText(String.format("%04.1f", Float.parseFloat(receiveStrArray[0])));
+                                    binding.OUT1.setText(String.format("%04.1f", Float.parseFloat(receiveStrArray[1])));
+                                    binding.OUT2.setText(String.format("%04.1f", Float.parseFloat(receiveStrArray[2])));
+                                    binding.OUT3.setText(String.format("%04.1f", Float.parseFloat(receiveStrArray[3])));
+                                    binding.OUT4.setText(String.format("%04.1f", Float.parseFloat(receiveStrArray[4])));
                                 }
                             });
                             connect = true;
@@ -250,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     });
 
-    /**藍芽連線監控(多線程)*/
+    /**藍芽連線監控(多線程)x*/
     private Runnable bleConnectionState=new Runnable(){
         @Override
         public void run() {
@@ -260,6 +269,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(getApplicationContext(),"裝置連線中斷",Toast.LENGTH_SHORT).show();
                 Log.d(TAG + " BleConnect","裝置連線中斷");
                 //binding.textBleStatus.setText("BlueTooth：Disconnect");
+                binding.mSeekBar1.setVisibility(View.INVISIBLE);
+                binding.mSeekBar2.setVisibility(View.INVISIBLE);
+                binding.mSeekBar3.setVisibility(View.INVISIBLE);
+                binding.mSeekBar4.setVisibility(View.INVISIBLE);
+                binding.linearLayout.setVisibility(View.INVISIBLE);
+                binding.linearLayout2.setVisibility(View.INVISIBLE);
+                binding.btnBluetooth.setVisibility(View.VISIBLE);
                 // 清除藍芽設備資訊
                 device = null;
                 socket = null;
@@ -358,21 +374,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             is=socket.getInputStream(); // 輸出流
                             isBlePostRunning = true; // 啟動藍芽訊息接收監控器
                             connect = true; // 變更連線狀態
-                            //mHandler.post(bleConnectionState); // 啟動藍芽連線狀態監控
-
-                            // 藍芽訊息監控 Thread 初始化
-                            receiveBlePost.start();
-                            sendBlePost.start();
-
+                            mHandler.post(bleConnectionState); // 啟動藍芽連線狀態監控
 
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    binding.mSeekBar1.setProgress(0);
-                                    binding.mSeekBar2.setProgress(0);
-                                    binding.mSeekBar3.setProgress(0);
-                                    binding.mSeekBar4.setProgress(0);
-                                    binding.mSeekBar5.setProgress(0);
+                                    binding.mSeekBar1.setVisibility(View.VISIBLE);
+                                    binding.mSeekBar2.setVisibility(View.VISIBLE);
+                                    binding.mSeekBar3.setVisibility(View.VISIBLE);
+                                    binding.mSeekBar4.setVisibility(View.VISIBLE);
+                                    //binding.linearLayout.setVisibility(View.VISIBLE);
+                                    //binding.linearLayout2.setVisibility(View.VISIBLE);
+                                    binding.btnBluetooth.setVisibility(View.INVISIBLE);
                                 }
                             });
 
@@ -422,21 +435,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 byte[] message_bytes = new byte[num_bytes];
                 System.arraycopy(buffer, 0, message_bytes, 0, num_bytes);
                 String message = new String(message_bytes);
-                /*
+
                 receiveStrArray = message.split(","); // 將數值轉換成陣列
                 if( Integer.parseInt(receiveStrArray[receiveStrArray.length-1]) == num_bytes){
                     Log.i(TAG, " Message received: " + message);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            binding.textSendIn.setText("Send In：" + message);
+                            //binding.textSendIn.setText("Send In：" + message);
                         }
                     });
                 }else{
-                    //Arrays.fill(receiveStrArray, "0"); // 清除陣列元素
+                    Arrays.fill(receiveStrArray, "0"); // 清除陣列元素
                     Log.i(TAG, " Message received: 數值異常");
+                    Log.i(TAG, " Message received: " + message);
                 }
-                */
 
             }
         } catch (IOException e) {
