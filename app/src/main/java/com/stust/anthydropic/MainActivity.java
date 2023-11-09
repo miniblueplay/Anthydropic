@@ -29,7 +29,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.stust.anthydropic.databinding.ActivityMainBinding;
@@ -38,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ActivityMainBinding binding; // MVVM 架構宣告
     private Handler mHandler; // 宣告 Handler
     private boolean isBlePostRunning = false; // (旗標)用於控制 Thread 是否繼續執行
+    private boolean setViewSeekBar = true; // 用於控制 SeekBar 是否顯示
 
     //藍芽連線宣告*********************************
     private static final int BLUETOOTH_REQUEST_CODE = 1;
@@ -114,6 +118,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initView() {
+        // 模式切換
+        binding.switchAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    binding.switchAuto.setText("自動");
+                    setViewSeekBar = true;
+                    if (connect)
+                        viewSeekBar(true);
+                }else {
+                    binding.switchAuto.setText("手動");
+                    setViewSeekBar = false;
+                    if (connect)
+                        viewSeekBar(false);
+                }
+            }
+        });
+
         // 獲取按鈕的實例及監聽器
         Button btnBluetooth = binding.btnBluetooth;
         btnBluetooth.setOnClickListener(this);
@@ -194,6 +216,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    private void viewSeekBar(boolean nw){
+        if(nw && setViewSeekBar){
+            binding.mSeekBar1.setVisibility(View.VISIBLE);
+            binding.mSeekBar2.setVisibility(View.VISIBLE);
+            binding.mSeekBar3.setVisibility(View.VISIBLE);
+            binding.mSeekBar4.setVisibility(View.VISIBLE);
+        } else {
+            binding.mSeekBar1.setVisibility(View.INVISIBLE);
+            binding.mSeekBar2.setVisibility(View.INVISIBLE);
+            binding.mSeekBar3.setVisibility(View.INVISIBLE);
+            binding.mSeekBar4.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
     @Override
     public void onClick(View v) {
         //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -269,10 +306,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(getApplicationContext(),"裝置連線中斷",Toast.LENGTH_SHORT).show();
                 Log.d(TAG + " BleConnect","裝置連線中斷");
                 //binding.textBleStatus.setText("BlueTooth：Disconnect");
-                binding.mSeekBar1.setVisibility(View.INVISIBLE);
-                binding.mSeekBar2.setVisibility(View.INVISIBLE);
-                binding.mSeekBar3.setVisibility(View.INVISIBLE);
-                binding.mSeekBar4.setVisibility(View.INVISIBLE);
+                viewSeekBar(false);
                 binding.linearLayout.setVisibility(View.INVISIBLE);
                 binding.linearLayout2.setVisibility(View.INVISIBLE);
                 binding.btnBluetooth.setVisibility(View.VISIBLE);
@@ -379,10 +413,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    binding.mSeekBar1.setVisibility(View.VISIBLE);
-                                    binding.mSeekBar2.setVisibility(View.VISIBLE);
-                                    binding.mSeekBar3.setVisibility(View.VISIBLE);
-                                    binding.mSeekBar4.setVisibility(View.VISIBLE);
+                                    viewSeekBar(true);
                                     //binding.linearLayout.setVisibility(View.VISIBLE);
                                     //binding.linearLayout2.setVisibility(View.VISIBLE);
                                     binding.btnBluetooth.setVisibility(View.INVISIBLE);
@@ -484,15 +515,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**隱藏導航欄**/
     public void hideNav() {
         Window window = getWindow();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         window.getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LOW_PROFILE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        //| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        //| View.SYSTEM_UI_FLAG_LOW_PROFILE
+                        //| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        //| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        Log.d(TAG, "隱藏導航欄");
+        //Log.d(TAG, "隱藏導航欄");
     }
 
     /**將在程式關閉前運行**/
